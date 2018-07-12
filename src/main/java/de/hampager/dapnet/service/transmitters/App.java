@@ -24,7 +24,8 @@ public final class App {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final String DEFAULT_CONFIG = "service.properties";
 	private static final String SERVICE_VERSION;
-	private static ImmutableConfiguration serviceConfig;
+	private static volatile ImmutableConfiguration serviceConfig;
+	private static volatile RestServer restServer;
 
 	static {
 		// Read service version from package
@@ -38,11 +39,16 @@ public final class App {
 	 * @param args Command line arguments
 	 */
 	public static void main(String[] args) {
+		// Use log4j instead of JUL
+		System.setProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager");
+
 		LOGGER.info("Starting DAPNET transmitter service {}", SERVICE_VERSION);
 
 		try {
 			registerShutdownHook();
 			parseCommandLine(args);
+
+			restServer = new RestServer(serviceConfig);
 		} catch (Exception ex) {
 			LOGGER.fatal("Service startup failed!", ex);
 		}
@@ -55,15 +61,6 @@ public final class App {
 	 */
 	public static String getVersion() {
 		return SERVICE_VERSION;
-	}
-
-	/**
-	 * Gets the loaded service configuration.
-	 * 
-	 * @return Configuration object
-	 */
-	public static ImmutableConfiguration getConfiguration() {
-		return serviceConfig;
 	}
 
 	private static void parseCommandLine(String[] args) throws ParseException, ConfigurationException {
@@ -99,8 +96,20 @@ public final class App {
 		serviceConfig = ConfigurationUtils.unmodifiableConfiguration(config);
 	}
 
+	private static void stop() {
+		try {
+			if (restServer != null) {
+				restServer.close();
+				restServer = null;
+			}
+		} catch (Exception ex) {
+			LOGGER.error("Failed to stop the HTTP server.", ex);
+		}
+	}
+
 	private static void registerShutdownHook() {
 		Runnable r = () -> {
+			stop();
 			// Log4j automatic shutdown hook is disabled, call it manually
 			LogManager.shutdown();
 		};
