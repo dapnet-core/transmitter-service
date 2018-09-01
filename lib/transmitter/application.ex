@@ -15,6 +15,7 @@ defmodule Transmitter.Application do
         plug: Transmitter.Router,
         options: [port: 80]
       ),
+      worker(Transmitter.Database, [], restart: :permanent),
       worker(Transmitter.CouchDB, [], restart: :permanent),
     ]
 

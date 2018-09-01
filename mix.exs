@@ -26,7 +26,10 @@ defmodule Transmitter.MixProject do
       {:cowboy, "~> 2.0"},
       {:plug, "~> 1.0"},
       {:httpoison, "~> 1.1.1"},
-      {:couchdb, github: "7h0ma5/elixir-couchdb"}
+      {:couchdb, github: "7h0ma5/elixir-couchdb"},
+      {:comeonin, "~> 4.0"},
+      {:bcrypt_elixir, "~> 1.0"},
+      {:timex, "~> 3.1"},
     ]
   end
 end

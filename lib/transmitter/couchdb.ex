@@ -1,6 +1,5 @@
 defmodule Transmitter.CouchDB do
   use GenServer
-  require Logger
 
   def db(name), do: GenServer.call(__MODULE__, {:db, name})
 
