@@ -35,8 +35,15 @@ defmodule Transmitter.Transmitters do
   end
 
   get "/:id" do
-    transmitters = []
-    send_resp(conn, 200, Poison.encode!(transmitters))
+    result = Transmitter.CouchDB.db("transmitters")
+    |> CouchDB.Database.get(id)
+
+    case result do
+      {:ok, data} ->
+        send_resp(conn, 200, data)
+      _ ->
+        send_resp(conn, 404, "Not found")
+    end
   end
 
   defp auth_permission(conn, perm) do
