@@ -1,7 +1,7 @@
 defmodule Transmitter.Bootstrap do
   use Plug.Router
 
-  plug Transmitter.Plug.Api
+  plug DapnetService.Plug.Api
 
   plug :match
   plug :dispatch
@@ -64,7 +64,7 @@ defmodule Transmitter.Bootstrap do
         auth_key = Map.get(params, "auth_key")
 
         if id != nil and auth_key != nil do
-          db = Transmitter.CouchDB.db("transmitters")
+          db = DapnetService.CouchDB.db("transmitters")
           case CouchDB.Database.get(db, id) do
             {:ok, result} ->
               transmitter = result |> Poison.decode!

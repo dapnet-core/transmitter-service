@@ -1,7 +1,7 @@
 defmodule Transmitter.Transmitters do
   use Plug.Router
 
-  plug Transmitter.Plug.Api
+  plug DapnetService.Plug.Api
 
   plug :match
   plug :dispatch
@@ -10,7 +10,7 @@ defmodule Transmitter.Transmitters do
     options = %{"include_docs" => true, "limit" => 20}
     |> Map.merge(conn.query_params)
 
-    {:ok, results} = Transmitter.CouchDB.db("transmitters")
+    {:ok, results} = DapnetService.CouchDB.db("transmitters")
     |> CouchDB.Database.view("transmitters", "byId", options)
 
     transmitters = results
@@ -29,13 +29,13 @@ defmodule Transmitter.Transmitters do
   end
 
   get "/_map" do
-    {:ok, results} = Transmitter.CouchDB.db("transmitters")
+    {:ok, results} = DapnetService.CouchDB.db("transmitters")
     |> CouchDB.Database.view("transmitters", "map")
     send_resp(conn, 200, results)
   end
 
   get "/:id" do
-    result = Transmitter.CouchDB.db("transmitters")
+    result = DapnetService.CouchDB.db("transmitters")
     |> CouchDB.Database.get(id)
 
     case result do

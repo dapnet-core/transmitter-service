@@ -16,7 +16,7 @@ defmodule Transmitter.Application do
         options: [port: 80]
       ),
       worker(Transmitter.Database, [], restart: :permanent),
-      worker(Transmitter.CouchDB, [], restart: :permanent),
+      worker(DapnetService.CouchDB, [], restart: :permanent),
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

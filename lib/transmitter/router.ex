@@ -1,7 +1,7 @@
 defmodule Transmitter.Router do
   use Plug.Router
 
-  plug Transmitter.Plug.Api
+  plug DapnetService.Plug.Api
 
   plug :match
   plug :dispatch
