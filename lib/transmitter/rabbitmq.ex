@@ -47,6 +47,17 @@ defmodule Transmitter.RabbitMQ do
     case Poison.decode(payload) do
       {:ok, heartbeat} ->
         if Map.get(heartbeat, "node") != System.get_env("NODE_NAME") do
+          dates = ["connected_since", "last_seen"]
+          |> Enum.map(fn key -> {key, Map.get(heartbeat, key)} end)
+          |> Enum.map(fn {key, string} ->
+            {key, Timex.Parse.DateTime.Parser.parse(string, "{ISO:Extended:Z}")}
+          end)
+          |> Enum.filter(&match?({key, {:ok, _}}, &1))
+          |> Enum.map(fn {key, {:ok, date}} -> {key, date} end)
+          |> Enum.into(%{})
+
+          heartbeat = Map.merge(heartbeat, dates)
+
           Transmitter.Database.update(heartbeat["_id"], heartbeat)
         end
       _ -> Logger.warn("Failed to decode remote heartbeat")
