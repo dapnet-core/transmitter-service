@@ -14,7 +14,7 @@ defmodule Transmitter.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      applications: [:cowboy, :plug, :httpoison],
+      applications: [:cowboy, :plug, :httpoison, :amqp, :timex],
       extra_applications: [:logger],
       mod: {Transmitter.Application, []}
     ]
@@ -27,9 +27,9 @@ defmodule Transmitter.MixProject do
       {:plug, "~> 1.0"},
       {:httpoison, "~> 1.1.1"},
       {:dapnet_service, github: "dapnet-core/elixir-dapnet-service"},
-      {:comeonin, "~> 4.0"},
-      {:bcrypt_elixir, "~> 1.0"},
       {:timex, "~> 3.1"},
+      {:amqp, "~> 1.0"},
+      {:ranch_proxy_protocol, "~> 2.0", override: true}
     ]
   end
 end

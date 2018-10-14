@@ -23,8 +23,7 @@ defmodule Transmitter.Database do
 
   def handle_call({:update, id, data}, _from, state) do
     data = get(id) |> Map.merge(data)
-
     :ets.insert(:transmitters, {id, data})
-    {:reply, nil, state}
+    {:reply, data, state}
   end
 end

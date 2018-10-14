@@ -2,6 +2,8 @@ defmodule Transmitter.Transmitters do
   use Plug.Router
 
   plug DapnetService.Plug.Api
+  plug DapnetService.Plug.BasicAuth
+  plug Plug.Parsers, parsers: [:json], json_decoder: Poison
 
   plug :match
   plug :dispatch
@@ -43,13 +45,6 @@ defmodule Transmitter.Transmitters do
         send_resp(conn, 200, data)
       _ ->
         send_resp(conn, 404, "Not found")
-    end
-  end
-
-  defp auth_permission(conn, perm) do
-    case HTTPoison.get("http://auth/users/permission/{perm}") do
-      {:ok, response} -> Poison.decode!(response.body)
-      _ -> false
     end
   end
 end

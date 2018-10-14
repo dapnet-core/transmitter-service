@@ -16,6 +16,7 @@ defmodule Transmitter.Application do
         options: [port: 80]
       ),
       worker(Transmitter.Database, [], restart: :permanent),
+      worker(Transmitter.RabbitMQ, [], restart: :permanent),
       worker(DapnetService.CouchDB, [], restart: :permanent),
     ]
 

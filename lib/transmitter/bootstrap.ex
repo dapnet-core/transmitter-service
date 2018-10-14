@@ -23,6 +23,7 @@ defmodule Transmitter.Bootstrap do
       ip_addr = Plug.Conn.get_req_header(conn, "x-forwarded-for")
 
       data = %{
+        "_id" => transmitter["_id"],
         "node" => System.get_env("NODE_NAME"),
         "connected_since" => Timex.now(),
         "last_seen" => Timex.now(),
@@ -30,7 +31,8 @@ defmodule Transmitter.Bootstrap do
         "software" => Map.get(params, "software"),
       }
 
-      Transmitter.Database.update(transmitter["_id"], data)
+      data = Transmitter.Database.update(transmitter["_id"], data)
+      Transmitter.RabbitMQ.publish_heartbeat(data)
 
       send_resp(conn, 200, Poison.encode!(response))
     else
@@ -47,7 +49,8 @@ defmodule Transmitter.Bootstrap do
         "addr" => conn.remote_ip
       }
 
-      Transmitter.Database.update(transmitter["_id"], data)
+      data = Transmitter.Database.update(transmitter["_id"], data)
+      Transmitter.RabbitMQ.publish_heartbeat(data)
 
       response = %{"status" => "ok"}
       send_resp(conn, 200, Poison.encode!(response))
