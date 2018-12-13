@@ -9,7 +9,7 @@ defmodule Transmitter.Transmitters do
   plug :dispatch
 
   get "/" do
-    options = %{"include_docs" => true, "limit" => 20}
+    options = %{"include_docs" => true, "limit" => 20, "reduce" => "false"}
     |> Map.merge(conn.query_params)
 
     {:ok, results} = DapnetService.CouchDB.db("transmitters")
