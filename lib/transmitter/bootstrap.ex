@@ -44,9 +44,11 @@ defmodule Transmitter.Bootstrap do
     {transmitter, params, conn} = transmitter_auth(conn)
 
     if transmitter do
+      ip_addr = Plug.Conn.get_req_header(conn, "x-forwarded-for")
+
       data = %{
         "last_seen" => Timex.now(),
-        "addr" => conn.remote_ip
+        "addr" => ip_addr
       }
 
       data = Transmitter.Database.update(transmitter["_id"], data)
